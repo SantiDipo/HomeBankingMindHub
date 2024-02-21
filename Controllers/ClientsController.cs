@@ -55,6 +55,17 @@ namespace HomeBankingMindHub.Controllers
                             Name = cl.Loan.Name,
                             Amount = cl.Amount,
                             Payments = int.Parse(cl.Payment)
+                        }).ToList(),
+                        Cards = client.Cards.Select(c => new CardDTO
+                        {
+                            Id = c.Id,
+                            CardHolder = c.CardHolder,
+                            Color = c.Color.ToString(),
+                            Cvv = c.Cvv,
+                            FromDate = c.FromDate,
+                            Number = c.Number,
+                            ThruDate = c.ThruDate,
+                            Type = c.Type.ToString(),
                         }).ToList()
                     };
                     clientsDTO.Add(newClientDTO);
@@ -119,8 +130,19 @@ namespace HomeBankingMindHub.Controllers
                         Amount = cl.Amount,
                         Payments = int.Parse(cl.Payment)
 
-                    }).ToList()           
-            };
+                    }).ToList(),
+                    Cards = client.Cards.Select(c => new CardDTO
+                    {
+                        Id = c.Id,
+                        CardHolder = c.CardHolder,
+                        Color = c.Color.ToString(),
+                        Cvv = c.Cvv,
+                        FromDate = c.FromDate,
+                        Number = c.Number,
+                        ThruDate = c.ThruDate,
+                        Type = c.Type.ToString(),
+                    }).ToList()
+                };
 
                 return Ok(clientDTO);
 

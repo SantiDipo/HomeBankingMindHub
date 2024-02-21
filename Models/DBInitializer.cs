@@ -77,6 +77,7 @@
                     context.SaveChanges();
                 }
             }
+
             if (!context.Loans.Any())
             {
                 var loans = new Loan[]
@@ -189,6 +190,87 @@
 
                 }
 
+            }
+
+            if (!context.Cards.Any())
+            {
+                //buscamos al unico cliente
+                var client1 = context.Clients.FirstOrDefault(c => c.Email == "vcoronado@gmail.com");
+                var client2 = context.Clients.FirstOrDefault(c => c.Email == "santidipo@gmail.com");
+                var client3 = context.Clients.FirstOrDefault(c => c.Email == "jacinfunes@gmail.com");
+                if (client1 != null)
+                {
+                    //le agregamos 2 tarjetas de crédito una GOLD y una TITANIUM, de tipo DEBITO Y CREDITO RESPECTIVAMENTE
+                    var cards = new Card[]
+                    {
+                        new Card {
+                            ClientId= client1.Id,
+                            CardHolder = client1.FirstName + " " + client1.LastName,
+                            Type = CardType.DEBIT,
+                            Color = CardColor.GOLD,
+                            Number = "3325-6745-7876-4445",
+                            Cvv = 990,
+                            FromDate= DateTime.Now,
+                            ThruDate= DateTime.Now.AddYears(4),
+                        },
+                        new Card {
+                            ClientId= client1.Id,
+                            CardHolder = client1.FirstName + " " + client1.LastName,
+                            Type = CardType.CREDIT,
+                            Color = CardColor.TITANIUM,
+                            Number = "2234-6745-552-7888",
+                            Cvv = 750,
+                            FromDate= DateTime.Now,
+                            ThruDate= DateTime.Now.AddYears(5),
+                        },
+                        new Card {
+                            ClientId= client2.Id,
+                            CardHolder = client2.FirstName + " " + client2.LastName,
+                            Type = CardType.DEBIT,
+                            Color = CardColor.SILVER,
+                            Number = "3325-7735-6876-2445",
+                            Cvv = 952,
+                            FromDate= DateTime.Now,
+                            ThruDate= DateTime.Now.AddYears(4),
+                        },
+                        new Card {
+                            ClientId= client2.Id,
+                            CardHolder = client2.FirstName + " " + client2.LastName,
+                            Type = CardType.CREDIT,
+                            Color = CardColor.GOLD,
+                            Number = "2834-3745-554-7848",
+                            Cvv = 250,
+                            FromDate= DateTime.Now,
+                            ThruDate= DateTime.Now.AddYears(5),
+                        },
+                          new Card {
+                            ClientId= client3.Id,
+                            CardHolder = client3.FirstName + " " + client3.LastName,
+                            Type = CardType.DEBIT,
+                            Color = CardColor.TITANIUM,
+                            Number = "3375-4725-8879-6445",
+                            Cvv = 390,
+                            FromDate= DateTime.Now,
+                            ThruDate= DateTime.Now.AddYears(4),
+                        },
+                        new Card {
+                            ClientId= client3.Id,
+                            CardHolder = client3.FirstName + " " + client3.LastName,
+                            Type = CardType.CREDIT,
+                            Color = CardColor.GOLD,
+                            Number = "2337-3449-654-2848",
+                            Cvv = 720,
+                            FromDate= DateTime.Now,
+                            ThruDate= DateTime.Now.AddYears(5),
+                        },
+                    };
+
+                    foreach (Card card in cards)
+                    {
+                        context.Cards.Add(card);
+                    }
+                    context.SaveChanges();
+                }
             }
 
         }
