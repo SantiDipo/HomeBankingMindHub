@@ -10,11 +10,9 @@ namespace HomeBankingMindHub.Controllers
     public class AccountsController : ControllerBase
     {
         private IAccountRepository _accountRepository;
-        private IClientRepository _clientRepository;
-        public AccountsController(IAccountRepository accountRepository, IClientRepository clientRepository)
+        public AccountsController(IAccountRepository accountRepository)
         {
             _accountRepository = accountRepository;
-            _clientRepository = clientRepository;
         }
 
 
@@ -70,13 +68,14 @@ namespace HomeBankingMindHub.Controllers
             try
             {
                 string email = User.FindFirst("Client") != null ? User.FindFirst("Client").Value : string.Empty;
-                var client = _clientRepository.FindByEmail(email);
                 var account = _accountRepository.FindById(id);
+
                 if (account == null)
                 {
                     return Forbid();
                 }
-                if (email == string.Empty || !String.Equals(email, client.Email))
+                string emailAux = account.Client.Email;
+                if (email == string.Empty || !String.Equals(email, emailAux))
                 {
                     return Unauthorized();
                 }          
