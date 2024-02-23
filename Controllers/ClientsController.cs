@@ -1,5 +1,6 @@
 ﻿using HomeBankingMindHub.Models;
 using HomeBankingMindHub.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HomeBankingMindHub.Controllers
@@ -14,12 +15,13 @@ namespace HomeBankingMindHub.Controllers
             _clientRepository = clientRepository;
         }
 
+        [Authorize(Policy = "AdminOnly")]
         [HttpGet]
         public IActionResult Get()
         {
             try
             {
-                var clients = _clientRepository.GetAllClients();
+                var clients = _clientRepository.GetAllClients();        
 
                 var clientsDTO = new List<ClientDTO>();
 
@@ -81,7 +83,7 @@ namespace HomeBankingMindHub.Controllers
             }
 
         }
-
+        [Authorize(Policy = "AdminOnly")]
         [HttpGet("{id}")]
         public IActionResult Get(long id)
         {
@@ -155,7 +157,7 @@ namespace HomeBankingMindHub.Controllers
             }
 
         }
-
+        [Authorize(Policy = "ClientOnly")]
         [HttpGet("current")]
         public IActionResult GetCurrent()
         {
@@ -221,9 +223,23 @@ namespace HomeBankingMindHub.Controllers
         {
             try
             {
-                if (String.IsNullOrEmpty(client.Email) || String.IsNullOrEmpty(client.Password) || String.IsNullOrEmpty(client.FirstName) || String.IsNullOrEmpty(client.LastName))
-                    return StatusCode(403, "datos inválidos");
-
+                if (String.IsNullOrEmpty(client.Email))
+                {
+                    return StatusCode(401, "Campo email invalido o nulo");
+                }
+                if (String.IsNullOrEmpty(client.Password))
+                {
+                    return StatusCode(401, "Campo email invalido o nulo");
+                }
+                if (String.IsNullOrEmpty(client.FirstName))
+                {
+                    return StatusCode(401, "Campo email invalido o nulo");
+                }
+                if (String.IsNullOrEmpty(client.LastName))
+                {
+                    return StatusCode(401, "Campo email invalido o nulo");
+                }
+            
                 Client user = _clientRepository.FindByEmail(client.Email);
 
                 if (user != null)
