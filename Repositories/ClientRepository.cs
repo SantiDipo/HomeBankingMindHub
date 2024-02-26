@@ -1,4 +1,5 @@
 ﻿using HomeBankingMindHub.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace HomeBankingMindHub.Repositories
@@ -7,6 +8,11 @@ namespace HomeBankingMindHub.Repositories
     {
         public ClientRepository(HomeBankingContext repositoryContext) : base(repositoryContext)
         {
+        }
+
+        public bool ExistByEmail(string email)
+        {
+            return FindByCondition(client => client.Email == email).Any();
         }
 
         public Client FindByEmail(string email)

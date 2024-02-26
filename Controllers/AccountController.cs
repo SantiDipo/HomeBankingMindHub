@@ -62,24 +62,24 @@ namespace HomeBankingMindHub.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-
+        [Authorize(Policy = "ClientOnly")]
         [HttpGet("{id}")]
         public IActionResult Get(long id) {
             try
             {
-                string email = User.FindFirst("Client") != null ? User.FindFirst("Client").Value : string.Empty;
-                var account = _accountRepository.FindById(id);
-
-                if (account == null)
+                string email = User.FindFirst("Client") != null ? User.FindFirst("Client").Value : string.Empty;          
+                if (email == string.Empty)
                 {
                     return Forbid();
                 }
-                string emailAux = account.Client.Email;
-                if (email == string.Empty || !String.Equals(email, emailAux))
+
+                var account = _accountRepository.FindClientByEmail(id, email);           
+                if (account == null) 
                 {
                     return Unauthorized();
-                }          
-                var accountDTO = new AccountDTO
+                } 
+
+                AccountDTO accountDTO = new AccountDTO
                 {
                     Id = account.Id,
 

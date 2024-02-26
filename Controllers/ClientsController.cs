@@ -240,9 +240,7 @@ namespace HomeBankingMindHub.Controllers
                     return StatusCode(401, "Campo email invalido o nulo");
                 }
             
-                Client user = _clientRepository.FindByEmail(client.Email);
-
-                if (user != null)
+                if (_clientRepository.ExistByEmail(client.Email))
                 {
                     return StatusCode(403, "Email está en uso");
                 }
