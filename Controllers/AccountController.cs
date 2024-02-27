@@ -2,6 +2,7 @@
 using HomeBankingMindHub.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace HomeBankingMindHub.Controllers
 {
@@ -25,11 +26,11 @@ namespace HomeBankingMindHub.Controllers
             {
                 var accounts = _accountRepository.GetAllAccounts();
 
-                var accountsDTO = new List<AccountDTO>();
+                List<AccountDTO> accountsDTO = new List<AccountDTO>();
 
                 foreach (var account in accounts)
                 {
-                    var newAccountDTO = new AccountDTO
+                    AccountDTO newAccountDTO = new AccountDTO
                     {
                         Id = account.Id,
 
@@ -64,7 +65,8 @@ namespace HomeBankingMindHub.Controllers
         }
         [Authorize(Policy = "ClientOnly")]
         [HttpGet("{id}")]
-        public IActionResult Get(long id) {
+        public IActionResult Get(long id) 
+        {
             try
             {
                 string email = User.FindFirst("Client") != null ? User.FindFirst("Client").Value : string.Empty;          

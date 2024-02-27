@@ -1,5 +1,6 @@
 ﻿using HomeBankingMindHub.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 
 namespace HomeBankingMindHub.Repositories
 {
@@ -7,6 +8,11 @@ namespace HomeBankingMindHub.Repositories
     {
      public AccountRepository(HomeBankingContext repositoryContext) : base(repositoryContext)
         {
+        }
+
+        public bool ExistByAccountNumber(string number)
+        {
+            return FindByCondition(account => "VIN-" + account.Number == number).Any();
         }
 
         public Account FindById(long id)
@@ -21,6 +27,13 @@ namespace HomeBankingMindHub.Repositories
             return FindByCondition(account => account.Id == id && account.Client.Email.Equals(email))
                 .Include(account => account.Transactions)
                 .FirstOrDefault();
+        }
+
+        public IEnumerable<Account> GetAccountsByClient(long clientId)
+        {
+            return FindByCondition(account => account.ClientId == clientId)
+            .Include(account => account.Transactions)
+            .ToList();
         }
 
         public IEnumerable<Account> GetAllAccounts()

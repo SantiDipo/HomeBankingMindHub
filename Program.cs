@@ -15,6 +15,7 @@ options.UseSqlServer(builder.Configuration.GetConnectionString("HomeBankingConex
 
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IClientRepository, ClientRepository>();
+builder.Services.AddScoped<ICardRepository, CardRepository>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
