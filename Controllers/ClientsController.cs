@@ -17,12 +17,14 @@ namespace HomeBankingMindHub.Controllers
         private IClientRepository _clientRepository;
         private IAccountRepository _accountRepository;
         private ICardRepository _cardRepository;
+        private readonly ILogger<Client> _logger;
         public ClientsController(IClientRepository clientRepository, IAccountRepository accountRepository,
-            ICardRepository cardRepository)
+            ICardRepository cardRepository, ILogger<Client> logger)
         {
             _clientRepository = clientRepository;
             _accountRepository = accountRepository;
             _cardRepository = cardRepository;
+            _logger = logger;
         }
 
         [Authorize(Policy = "AdminOnly")]
