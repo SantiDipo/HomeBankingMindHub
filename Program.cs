@@ -16,6 +16,7 @@ options.UseSqlServer(builder.Configuration.GetConnectionString("HomeBankingConex
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IClientRepository, ClientRepository>();
 builder.Services.AddScoped<ICardRepository, CardRepository>();
+builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -51,6 +52,7 @@ using (var scope = app.Services.CreateScope())
         logger.LogError(ex, "Ha ocurrido un error al enviar la información a la base de datos!");
     }
 }
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

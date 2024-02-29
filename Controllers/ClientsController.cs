@@ -417,6 +417,7 @@ namespace HomeBankingMindHub.Controllers
             }
             catch (Exception ex)
             {
+
                 return StatusCode(500, ex.Message);
             }
         }

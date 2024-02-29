@@ -11,5 +11,6 @@ namespace HomeBankingMindHub.Repositories
         Account FindClientByEmail(long id, string email);
         IEnumerable<Account> GetAccountsByClient(long clientId);
         bool ExistByAccountNumber(string number);
+        Account FindByNumber(string number);
     }
 }
