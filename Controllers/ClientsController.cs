@@ -265,6 +265,14 @@ namespace HomeBankingMindHub.Controllers
                     Password = client.Password,
                     FirstName = client.FirstName,
                     LastName = client.LastName,
+                    Accounts = new Account[] {
+                        new Account
+                        {
+                            Number = Randomizer.randomAccountNumber(),
+                            Balance = 0,
+                            CreationDate = DateTime.Now,
+                        }
+                    }
                 };
 
                 _clientRepository.Save(newClient);
@@ -276,6 +284,7 @@ namespace HomeBankingMindHub.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+
         [Authorize(Policy = "ClientOnly")]
         [HttpPost("current/accounts")]
         public IActionResult postAccounts()
@@ -391,8 +400,8 @@ namespace HomeBankingMindHub.Controllers
 
                 CardColor color = (CardColor)Enum.Parse(typeof(CardColor), card.color);
                 CardType type = (CardType)Enum.Parse(typeof(CardType), card.type);
-                
-                if(client.Cards.Any(card => card.Color.Equals(color) && card.Type.Equals(type)))
+
+                if (client.Cards.Any(card => card.Color.Equals(color) && card.Type.Equals(type)))
                 {
                     return BadRequest("Usted ya tiene una tarjeta de " + type + " y de color " + color);
                 }
