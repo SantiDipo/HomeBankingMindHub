@@ -2,6 +2,7 @@
 using HomeBankingMindHub.Models;
 using HomeBankingMindHub.Models.Enums;
 using HomeBankingMindHub.Repositories;
+using HomeBankingMindHub.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Transactions;
@@ -12,16 +13,16 @@ namespace HomeBankingMindHub.Controllers
     [ApiController]
     public class TransactionsController : Controller
     {
-        private IClientRepository _clientRepository;
-        private IAccountRepository _accountRepository;
-        private ITransactionRepository _transactionRepository;
+        private IClientService _clientService;
+        private IAccountService _accountService;      
+        private ITransactionService _transactionService;
 
-        public TransactionsController(IClientRepository clientRepository, IAccountRepository accountRepository,
-            ITransactionRepository transactionRepository)
+        public TransactionsController(IClientService clientService, IAccountService accountService
+            ,ITransactionService transactionService)
         {
-            _clientRepository = clientRepository;
-            _accountRepository = accountRepository;
-            _transactionRepository = transactionRepository;
+            _clientService = clientService;
+            _accountService = accountService;           
+            _transactionService = transactionService;
         }
         [Authorize(Policy = "ClientOnly")]
         [HttpPost]
@@ -37,7 +38,7 @@ namespace HomeBankingMindHub.Controllers
                         return Forbid();
                     }
 
-                    Client client = _clientRepository.FindByEmail(email);
+                    Client client = _clientService.getClientByEmail(email);
 
                     if (client == null)
                     {
@@ -50,13 +51,13 @@ namespace HomeBankingMindHub.Controllers
                         return StatusCode(403, "Alguno de los numeros de cuenta estan vacios.");
                     }
 
-                    Account fromAccount = _accountRepository.FindByNumber(transfer.FromAccountNumber);
+                    Account fromAccount =_accountService.getAccountByNumber(transfer.FromAccountNumber);
                     if (fromAccount == null)
                     {
                         return StatusCode(403, "La cuenta de origen no existe o es nula.");
                     }
 
-                    Account toAccount = _accountRepository.FindByNumber(transfer.ToAccountNumber);
+                    Account toAccount = _accountService.getAccountByNumber(transfer.ToAccountNumber);
                     if (toAccount == null)
                     {
                         return StatusCode(403, "La cuenta de destino no existe o es nula.");
@@ -65,12 +66,7 @@ namespace HomeBankingMindHub.Controllers
                     if (transfer.Amount <= 0 || string.IsNullOrEmpty(transfer.Description))
                     {
                         return StatusCode(403, "El monto o la descripción son invalidos.");
-                    }
-
-                    if (_accountRepository.ExistByAccountNumber(transfer.ToAccountNumber))
-                    {
-                        return StatusCode(403, "La cuenta de destino no existe.");
-                    }
+                    }                  
 
                     if (fromAccount.Client.Id != client.Id)
                     {
@@ -87,36 +83,9 @@ namespace HomeBankingMindHub.Controllers
                         return StatusCode(403, "No puede ingresar la misma cuenta de origen en la de destino.");
                     }
 
-                    Models.Transaction transactionfrom = new Models.Transaction
-                    {
-                        Amount = transfer.Amount * -1,
-                        Description = transfer.Description,
-                        DateTimed = DateTime.UtcNow,
-                        Type = TransactionType.DEBIT,
-                        AccountId = fromAccount.Id,
-                    };
-
-                    Models.Transaction transactionto = new Models.Transaction
-                    {
-                        Amount = transfer.Amount,
-                        Description = transfer.Description,
-                        DateTimed = DateTime.UtcNow,
-                        Type = TransactionType.CREDIT,
-                        AccountId = toAccount.Id,
-                    };
-
-                    _transactionRepository.Save(transactionfrom);
-                    _transactionRepository.Save(transactionto);
-
-                    fromAccount.Balance -= transfer.Amount;
-                    toAccount.Balance += transfer.Amount; ;
-
-                    _accountRepository.Save(fromAccount);
-                    _accountRepository.Save(toAccount);
-
-                    var transactions = new { FromTransaction = transactionfrom, ToTransaction = transactionto };
+                    _transactionService.createTransaction(fromAccount,toAccount, transfer);                  
                     scope.Complete();
-                    return Created("", transactions);
+                    return Created();
 
                 }
                 catch (Exception ex)

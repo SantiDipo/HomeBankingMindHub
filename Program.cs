@@ -1,11 +1,19 @@
 using HomeBankingMindHub.Models;
 using HomeBankingMindHub.Repositories;
+using HomeBankingMindHub.Services;
+using HomeBankingMindHub.Services.impl;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddLogging(loggin =>
+{
+    loggin.AddConsole();
+    loggin.AddDebug();
+    loggin.AddEventLog();
+});
 // Add services to the container.
 builder.Services.AddControllers().AddJsonOptions(x =>
 x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
@@ -19,6 +27,10 @@ builder.Services.AddScoped<ICardRepository, CardRepository>();
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 builder.Services.AddScoped<ILoanRepository, LoanRepository>();
 builder.Services.AddScoped<IClientLoanRepository, ClientLoanRepository>();
+builder.Services.AddScoped<IClientService, ClientService>();
+builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<ICardService, CardService>();
+builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
