@@ -18,7 +18,7 @@ namespace HomeBankingMindHub.Services.impl
 
         public void createTransaction(Account fromAccount, Account toAccount, TransferDTO transfer)
         {
-            Transaction transactionfrom = new Transaction
+            Transaction transactionfrom = new Transaction()
             {
                 Amount = transfer.Amount * -1,
                 Description = transfer.Description,
@@ -27,7 +27,7 @@ namespace HomeBankingMindHub.Services.impl
                 AccountId = fromAccount.Id,
             };
 
-            Transaction transactionto = new Transaction
+            Transaction transactionto = new Transaction()
             {
                 Amount = transfer.Amount,
                 Description = transfer.Description,

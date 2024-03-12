@@ -103,33 +103,33 @@ namespace HomeBankingMindHub.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody] Client client)
+        public IActionResult Post([FromBody] ClientDTO clientDto)
         {
             try
             {
-                if (String.IsNullOrEmpty(client.Email))
+                if (String.IsNullOrEmpty(clientDto.Email))
                 {
                     return StatusCode(401, "Campo email invalido o nulo");
                 }
-                if (String.IsNullOrEmpty(client.Password))
+                if (String.IsNullOrEmpty(clientDto.Password))
                 {
                     return StatusCode(401, "Campo email invalido o nulo");
                 }
-                if (String.IsNullOrEmpty(client.FirstName))
+                if (String.IsNullOrEmpty(clientDto.FirstName))
                 {
                     return StatusCode(401, "Campo email invalido o nulo");
                 }
-                if (String.IsNullOrEmpty(client.LastName))
+                if (String.IsNullOrEmpty(clientDto.LastName))
                 {
                     return StatusCode(401, "Campo email invalido o nulo");
                 }
 
-                if (_clientService.clientEmailExist(client.Email))
+                if (_clientService.clientEmailExist(clientDto.Email))
                 {
                     return StatusCode(403, "Email está en uso");
                 }
 
-                _clientService.CreateClient(client);
+                _clientService.CreateClient(clientDto);
                 return Created();
 
             }

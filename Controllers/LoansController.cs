@@ -2,10 +2,9 @@
 using HomeBankingMindHub.Models;
 using HomeBankingMindHub.Models.Enums;
 using HomeBankingMindHub.Repositories;
+using HomeBankingMindHub.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using System;
 
 using System.Transactions;
 
@@ -15,21 +14,18 @@ namespace HomeBankingMindHub.Controllers
     [ApiController]
     public class LoansController : ControllerBase
     {
-        public IClientRepository _clientRepository;
-        public IAccountRepository _accountRepository;
-        public ITransactionRepository _transactionRepository;
-        public IClientLoanRepository _clientLoansRepository;
-        public ILoanRepository _loanRepository;
+        public IClientService _clientService;
+        public IAccountService _accountService;
+        public ITransactionService _transactionService;
+        public ILoanService _loanService;
 
-        public LoansController(IClientRepository clientRepository, IAccountRepository accountRepository,
-            ITransactionRepository transactionRepository, IClientLoanRepository clientLoansRepository,
-            ILoanRepository loanRepository)
+        public LoansController(IClientService clientService, IAccountService accountService,
+            ITransactionService transactionService,ILoanService loanService)
         {
-            _clientRepository = clientRepository;
-            _accountRepository = accountRepository;
-            _transactionRepository = transactionRepository;
-            _clientLoansRepository = clientLoansRepository;
-            _loanRepository = loanRepository;
+            _clientService = clientService;
+            _accountService = accountService;
+            _transactionService = transactionService;     
+            _loanService = loanService;
 
 
         }
@@ -47,14 +43,14 @@ namespace HomeBankingMindHub.Controllers
                         return Forbid();
                     }
 
-                    var client = _clientRepository.FindByEmail(email);
+                    var client = _clientService.getClientByEmail(email);
 
                     if (client == null)
                     {
                         return Forbid();
                     }
 
-                    var loan = _loanRepository.FindById(loanApplicationDTO.LoanId);
+                    var loan = _loanService.getLoanById(loanApplicationDTO.LoanId);
                     if (loan == null)
                     {
                         return StatusCode(403, "No se encontro el id del prestamos solicitado");
@@ -70,7 +66,7 @@ namespace HomeBankingMindHub.Controllers
                         return StatusCode(403, "No ha seleccionado la cantidad de cuotas");
                     }
 
-                    var account = _accountRepository.FindByNumber(loanApplicationDTO.ToAccountNumber);
+                    var account = _accountService.getAccountByNumber(loanApplicationDTO.ToAccountNumber);
                     if (account == null)
                     {
                         return StatusCode(403, "La cuenta seleccionada no existe");
@@ -80,32 +76,10 @@ namespace HomeBankingMindHub.Controllers
                     {
                         return StatusCode(403, "La cuenta seleccionada no pertenece al cliente en sesion.");
                     }
-                    ClientLoan loanApplication = new ClientLoan()
-                    {
-                        LoanId = loanApplicationDTO.LoanId,
-                        Amount = loanApplicationDTO.Amount * 1.2,
-                        Payment = loanApplicationDTO.Payments,
-                        Clientid = client.Id,
-                    };
-                    _clientLoansRepository.save(loanApplication);
-
-                    Models.Transaction transactionto = new Models.Transaction
-                    {
-                        Amount = loanApplicationDTO.Amount,       
-                        Description = loan.Name + " loan approve",
-                        DateTimed = DateTime.UtcNow,
-                        Type = TransactionType.CREDIT,
-                        AccountId = account.Id,
-                    };
-
-                    _transactionRepository.Save(transactionto);
-
-                    account.Balance += loanApplicationDTO.Amount;
-
-                    _accountRepository.Save(account);
+                    _loanService.CreateLoan(loanApplicationDTO, account,client,loan);
 
                     scope.Complete();
-                    return Ok(loanApplication);
+                    return Ok();
                 }
                 catch (Exception ex)
                 {
@@ -119,7 +93,7 @@ namespace HomeBankingMindHub.Controllers
         {
             try
             {
-                var loans = _loanRepository.GetAll();
+                var loans = _loanService.getAllLoans();
                 var loansDTO = new List<LoanDTO>();
                 if (loans == null)
                 {
@@ -128,13 +102,7 @@ namespace HomeBankingMindHub.Controllers
 
                 foreach (var loan in loans)
                 {
-                    var loanDto = new LoanDTO
-                    {
-                        Id = loan.Id,
-                        MaxAmount = loan.MaxAmount,
-                        Payments = loan.Payments,
-                        Name = loan.Name,
-                    };
+                    var loanDto = new LoanDTO(loan);
                     loansDTO.Add(loanDto);
                 }
                 return Ok(loansDTO);

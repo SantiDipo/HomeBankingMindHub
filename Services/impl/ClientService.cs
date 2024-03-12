@@ -54,14 +54,15 @@ namespace HomeBankingMindHub.Services.impl
             return _clientRepository.ExistByEmail(email);
         }
 
-        public void CreateClient(Client client)
+        public void CreateClient(ClientDTO clientDto)
         {
+          
             Client newClient = new Client
             {
-                Email = client.Email,
-                Password = client.Password,
-                FirstName = client.FirstName,
-                LastName = client.LastName,
+                Email = clientDto.Email,
+                Password = Hasher.HashPassword(clientDto.Password),
+                FirstName = clientDto.FirstName,
+                LastName = clientDto.LastName,
                 Accounts = new Account[] {
                         new Account
                         {

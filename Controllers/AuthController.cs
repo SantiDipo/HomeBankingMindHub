@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using System.Security.Cryptography;
+using HomeBankingMindHub.Utils;
 
 namespace HomeBankingMindHub.Controllers
 {
@@ -18,12 +20,13 @@ namespace HomeBankingMindHub.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] Client client)
+        public async Task<IActionResult> Login([FromBody] ClientDTO client)
         {
             try
             {
                 Client user = _clientRepository.FindByEmail(client.Email);
-                if (user == null || !String.Equals(user.Password, client.Password))
+                string hashedPassword = Hasher.HashPassword(client.Password);
+                if (user == null || !String.Equals(user.Password, hashedPassword))
                     return Unauthorized();
 
                 var claims = new List<Claim>();

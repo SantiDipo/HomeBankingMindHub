@@ -9,7 +9,7 @@ namespace HomeBankingMindHub.Services
         ClientDTO getClientDTOById(long id);
         Client getClientById(long id);
         Boolean clientEmailExist(string email);       
-        void CreateClient(Client client);
+        void CreateClient(ClientDTO clientDto);
         public IEnumerable<Client> getAllClient();
 
     }

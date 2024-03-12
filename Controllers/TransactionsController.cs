@@ -1,7 +1,5 @@
 ﻿using HomeBankingMindHub.DTOs;
 using HomeBankingMindHub.Models;
-using HomeBankingMindHub.Models.Enums;
-using HomeBankingMindHub.Repositories;
 using HomeBankingMindHub.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

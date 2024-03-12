@@ -31,6 +31,7 @@ builder.Services.AddScoped<IClientService, ClientService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<ICardService, CardService>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
+builder.Services.AddScoped<ILoanService, LoanService>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
